@@ -1,20 +1,10 @@
-FROM node:10.15.3-stretch-slim
+FROM node:10.15.3-alpine
 
-RUN    /bin/true \
+RUN apk add --no-cache su-exec nginx \
     \
-    # Required packages
-    && apt-get update \
-    && apt-get install -y gosu nginx \
-    \
-    # Cleanup
-    && rm -rf /var/lib/apt/lists/* \
-    && apt-get -y --purge autoremove \
-    \
-    # forward nginx logs to docker log collector
+    # forward request and error logs to docker log collector
     && ln -sf /dev/stdout /var/log/nginx/access.log \
-    && ln -sf /dev/stderr /var/log/nginx/error.log \
-    \
-    && /bin/true
+    && ln -sf /dev/stderr /var/log/nginx/error.log
 
 COPY docker /docker/
 COPY nginx.conf /etc/nginx/nginx.conf
